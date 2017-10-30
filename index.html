@@ -32,6 +32,12 @@ input {
 
 <input id="copy" type="button" value="copy">
 <input id="save" type="button" value="save">
+
+<form action="result.php" method="post" name="formTokyo">
+  <input type="hidden" name="canvasData" id="canvasData" value="">
+  <button type="button" onclick="dataSubmit();">送信</button>
+</form>
+
 <br>
 <br>
 <video id="camera" autoplay></video>
@@ -65,6 +71,9 @@ $("#copy").on( "click", function(){
 	// カメラから キャンバスに静止画を描く
 	ctx.drawImage(camera, 0, 0, 400, 300);
 });
+
+
+
 
 // *************************************
 // Canvas の画像を保存
@@ -167,6 +176,24 @@ function error( message ) {
 		})
 		.css("border", "solid 1px #000");
 }
+
+// *************************************
+// Canvas の画像をサーバーに保存
+// *************************************
+
+
+function dataSubmit() {
+		
+	  //toDataURLでデータを取得
+	  var imgdata = canvas.toDataURL(); // data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEkAAABICAYAAAC6L9h5AAAEQklEQ…CmIWlIFAQoTLSSNCQKAhQmWkkaEgUBChOtJA2JggCFyV+Xm+1HlTQ5DAAAAABJRU5ErkJggg==
+	
+	  //input type="hidden の値としてセット
+	  document.getElementById('canvasData').value = imgdata;
+	
+	  document.formTokyo.submit();
+	
+}
+
 </script>
 </body>
 </html>
