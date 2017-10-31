@@ -3,16 +3,16 @@
 
 require_once 'HTTP/Request2.php';
 require('setting.php');
-function h($string) {
-    if (is_array($string)) {
-        return array_map("h", $string);
-    } else {
-        return htmlspecialchars($string, ENT_QUOTES,'UTF-8');
-    }
-}
-echo "<pre>$_POST------------------";
-print_r(h($_POST));
-echo "---------------</pre>";
+// function h($string) {
+//     if (is_array($string)) {
+//         return array_map("h", $string);
+//     } else {
+//         return htmlspecialchars($string, ENT_QUOTES,'UTF-8');
+//     }
+// }
+//echo "<pre>$_POST------------------";
+//print_r(h($_POST));
+//echo "---------------</pre>";
 
 
 //canvasデータがPOSTで送信されてきた場合
@@ -74,7 +74,37 @@ catch (HttpException $ex)
     echo $ex;
 }
 
-//header('Location: tweet.html');
+$ret = json_decode($response->getBody());
+if(!$ret) {
+    return null;
+  }
+  $scores = $ret[0]->scores;
+  $emotions = array(
+    'anger' => $scores->anger,
+    'contempt' => $scores->contempt,
+    'disgust' => $scores->disgust,
+    'fear' => $scores->fear,
+    'happiness' => $scores->happiness,
+    'neutral' => $scores->neutral,
+    'sadness' => $scores->sadness,
+    'surprise' => $scores->surprise,
+  );
+
+  
+echo nl2br("\n");;
+echo $emotions['anger'];
+
+    // 戻り値の中から一番顕著な感情を取得する。
+    $max_point = max($emotions);
+    $hit_emotions = array_keys($emotions, $max_point);
+    $array_num = array_rand($hit_emotions, 1); // 同点対応
+    $emotion = $hit_emotions[$array_num];
+
+    $result['emotion'] = $emotion;
+    $result['point'] = $emotions[$emotion];
+
+    echo nl2br("\n");;
+    echo $result['emotion'].": ".$result['point'];
 
 ?>
 
@@ -83,6 +113,7 @@ catch (HttpException $ex)
 <head>
 <meta content="width=device-width initial-scale=1.0 minimum-scale=1.0 maximum-scale=1.0 user-scalable=no" name="viewport">
 <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 <title>表情認識できたよ！</title>
 
 
@@ -90,15 +121,48 @@ catch (HttpException $ex)
 <body>
 
 <style>
-input {
-	font-size: 20px;
+.flat_ss { 
+    color: #484848;
+    display: inline-block;
+    height: 50px;
+    font-size: 25px;
+    line-height: 50px;
+    vertical-align: middle;
+    background: #eaeef1;
+    text-decoration: none;
+    margin: 1em;
 }
-#camera {
-	width: 400px;
-	height: 300px;
+
+.flat_ss .iconback{
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    color: white;
 }
-#canvas,#camera {
-	border: 1px solid #000;
+.flat_ss .iconback .fa{
+    font-size: 25px;
+    line-height: 50px;
+}
+.flat_ss .iconback .fa{
+	transition: .3s;
+}
+
+.flat_ss .btnttl{
+    display: inline-block;
+    width: 120px;
+    text-align: center;
+    vertical-align:middle;
+}
+
+.flat_ss .tw {background:#1da1f3}
+.flat_ss .fb {background:#3b75d4}
+.flat_ss .fdly {background:#7ece46}
+.flat_ss .pkt {background:#fd7171}
+.flat_ss:hover .iconback .fa{
+    -webkit-transform: rotateX(360deg);
+    -ms-transform: rotateX(360deg);
+    transform: rotateX(360deg);
 }
 </style>
 
@@ -107,9 +171,30 @@ input {
 <br>
 
 <?php
-echo "<a href=\"javascript:location.href='http://twitter.com/home?status='+encodeURI(document.title) + '".$requestPng." (11月10日まで)+%2523白鷺祭  %2523計算知能工学研究室 %2523B4-E409'\">Tweetするよ！</a>";
+echo "<a href=\"javascript:location.href='http://twitter.com/home?status='+encodeURI(document.title) + '".$requestPng." (11月10日まで)+%2523白鷺祭  %2523計算知能工学研究室 %2523B4-E409'\" class=\"flat_ss\">
+<span class=\"iconback tw\"><i class=\"fa fa-twitter\"></i></span><span class=\"btnttl\">TWEET</span>
+</a>";
+echo "<img src=\"".$requestPng."\" alt=\"海の写真\" title=\"空と海\">";
 ?>
 <br>
 <br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 
+<?php
 
+try
+{
+    $response = $request->send();
+    echo $response->getBody();
+}
+catch (HttpException $ex)
+{
+    echo $ex;
+}
+
+?>

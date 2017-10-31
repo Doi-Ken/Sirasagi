@@ -4,7 +4,7 @@
 <meta content="width=device-width initial-scale=1.0 minimum-scale=1.0 maximum-scale=1.0 user-scalable=no" name="viewport">
 <meta http-equiv="Content-type" content="text/html; charset=utf-8">
 <link rel="shortcut icon" href="https://lightbox.sakura.ne.jp/homepage/WinOfSql.ico">
-<title>Face API使ってみたよ！</title>
+<title>Emotion API使ってみたよ！</title>
 
 
 </head>
@@ -24,20 +24,53 @@ input {
 #canvas,#camera {
 	border: 1px solid #000;
 }
+#copy{
+	display: inline-block;
+  text-decoration: none;
+  background: #87befd;
+  color: #FFF;
+  width: 120px;
+  height: 120px;
+  line-height: 120px;
+  border-radius: 50%;
+  text-align: center;
+  vertical-align: middle;
+  overflow: hidden;
+  transition: .4s;
+}
+#copy:hover{
+	background: #668ad8;
+}
+#recognitionbutton{
+	display: inline-block;
+  text-decoration: none;
+  background: #87befd;
+  color: #FFF;
+  width: 120px;
+  height: 120px;
+  line-height: 120px;
+  border-radius: 50%;
+  text-align: center;
+  vertical-align: middle;
+  overflow: hidden;
+  transition: .4s;
+}
+#recognitionbutton:hover{
+	background: #668ad8;
+}
 </style>
-
-<a href="javascript:location.href='http://twitter.com/home?status='+encodeURI(document.title)+'%20'+encodeURI(location.href)+'img/test.jpg' + '(11月10日まで)+%2523白鷺祭  %2523計算知能工学研究室 %2523B4-E409'">Tweetするよ！</a>
-<br>
-<br>
-
-<input id="copy" type="button" value="copy">
-<input id="save" type="button" value="save">
-
-<form action="result.php" method="post" name="formTokyo">
-  <input type="hidden" name="canvasData" id="canvasData" value="">
-  <button type="button" onclick="dataSubmit();">送信</button>
-</form>
-
+<div style="float:left;">
+		<input id="copy" type="button" value="Capture">
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</div>
+<div style="float:left;">
+		<form action="result.php" method="post" name="formTokyo">
+				<input type="hidden" name="canvasData" id="canvasData" value="">
+				<button id="recognitionbutton" type="button" onclick="dataSubmit();">Start&#10;Recognition</button>
+			  </form>			  
+		</div>
+<div style="clear:both;">
+</div>
 <br>
 <br>
 <video id="camera" autoplay></video>
@@ -70,41 +103,6 @@ $("#copy").on( "click", function(){
 
 	// カメラから キャンバスに静止画を描く
 	ctx.drawImage(camera, 0, 0, 400, 300);
-});
-
-
-
-
-// *************************************
-// Canvas の画像を保存
-// *************************************
-$("#save").on( "click", function(){
-
-	// IE の場合
-	if ( typeof(MSBlobBuilder) != "undefined" ) {
-
-//		var blobBuilderObject = new MSBlobBuilder();
-//		blobBuilderObject.append( canvas.msToBlob() );
-//		navigator.msSaveBlob(blobBuilderObject.getBlob(), "canvas.png" );	// PNG
-
-		var jpeg = canvas.toDataURL("image/jpeg")	// JPEG
-		var bin = atob(jpeg.split(',')[1]);
-		var buffer = new Uint8Array(bin.length);
-		for (var i = 0; i < bin.length; i++) {
-		  buffer[i] = bin.charCodeAt(i);
-		}
-		var blob = new Blob([buffer.buffer], {type: "image/jpeg"});
-		navigator.msSaveBlob(blob, "canvas.jpg" );
-
-	}
-	else {
-		var jpeg = canvas.toDataURL("image/jpeg")	// JPEG
-		var download = $("<a></a>").appendTo("body").css("display","none");
-		download.prop({"href" : jpeg, "download": "canvas.jpg" });
-		download.get(0).click();
-		download.remove();
-	}
-
 });
 
 // *************************************
