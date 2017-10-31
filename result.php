@@ -3,19 +3,23 @@
 
 require_once 'HTTP/Request2.php';
 require('setting.php');
-// function h($string) {
-//     if (is_array($string)) {
-//         return array_map("h", $string);
-//     } else {
-//         return htmlspecialchars($string, ENT_QUOTES,'UTF-8');
-//     }
-// }
-// echo "<pre>$_POST------------------";
-// print_r(h($_POST));
-// echo "---------------</pre>";
+function h($string) {
+    if (is_array($string)) {
+        return array_map("h", $string);
+    } else {
+        return htmlspecialchars($string, ENT_QUOTES,'UTF-8');
+    }
+}
+echo "<pre>$_POST------------------";
+print_r(h($_POST));
+echo "---------------</pre>";
+
 
 //canvasデータがPOSTで送信されてきた場合
 $canvasData = $_POST["canvasData"];
+
+$canvashash = abs(crc32($canvasData));
+$saveData = './img/'.((string)$canvashash).'.png';
 
 $canvasData = preg_replace("/data:[^,]+,/i","",$canvasData);
 
@@ -24,7 +28,7 @@ $canvasData = base64_decode($canvasData);
 $image = imagecreatefromstring($canvasData);
 
 imagesavealpha($image, TRUE); // 透明色の有効
-imagepng($image ,'./img/result.png');
+imagepng($image ,$saveData);
 
 
 // NOTE: You must use the same region in your REST call as you used to obtain your subscription keys.
@@ -53,8 +57,12 @@ $url->setQueryVariables($parameters);
 
 $request->setMethod(HTTP_Request2::METHOD_POST);
 
+$requestPng = "http://www.doi-ken.com/faceapi/img/"."result".".png";
+$requestBody = '{"url": "'.$requestPng.'"}';
+
 // Request body
-$request->setBody('{"url": "https://emotionwebsto.blob.core.windows.net/handson/emotionweb_happiness.jpg"}');
+//$request->setBody('{"url": "http://www.doi-ken.com/faceapi/img/result.png"}');
+$request->setBody($requestBody);
 
 try
 {
@@ -75,7 +83,7 @@ catch (HttpException $ex)
 <head>
 <meta content="width=device-width initial-scale=1.0 minimum-scale=1.0 maximum-scale=1.0 user-scalable=no" name="viewport">
 <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-<title>Tweetする？</title>
+<title>表情認識できたよ！</title>
 
 
 </head>
@@ -97,7 +105,10 @@ input {
 <br>
 <br>
 <br>
-<a href="javascript:location.href='http://twitter.com/home?status='+encodeURI(document.title)+'%20'+encodeURI(location.href)+'img/test.jpg' + '(11月10日まで)+%2523白鷺祭  %2523計算知能工学研究室 %2523B4-E409'">Tweetするよ！</a>
+
+<?php
+echo "<a href=\"javascript:location.href='http://twitter.com/home?status='+encodeURI(document.title) + '".$requestPng." (11月10日まで)+%2523白鷺祭  %2523計算知能工学研究室 %2523B4-E409'\">Tweetするよ！</a>";
+?>
 <br>
 <br>
 
