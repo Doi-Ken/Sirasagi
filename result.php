@@ -10,9 +10,9 @@ require('setting.php');
 //         return htmlspecialchars($string, ENT_QUOTES,'UTF-8');
 //     }
 // }
-//echo "<pre>$_POST------------------";
-//print_r(h($_POST));
-//echo "---------------</pre>";
+// echo "<pre>$_POST------------------";
+// print_r(h($_POST));
+// echo "---------------</pre>";
 
 
 //canvasデータがPOSTで送信されてきた場合
@@ -57,7 +57,7 @@ $url->setQueryVariables($parameters);
 
 $request->setMethod(HTTP_Request2::METHOD_POST);
 
-$requestPng = "http://www.doi-ken.com/faceapi/img/"."result".".png";
+$requestPng = "http://www.doi-ken.com/public_html/faceapi/img/"."result".".png";
 $requestBody = '{"url": "'.$requestPng.'"}';
 
 // Request body
