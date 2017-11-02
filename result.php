@@ -96,7 +96,7 @@ if(!$ret) {
 
   
 echo nl2br("\n");;
-echo $emotions['anger'];
+echo $saveData;
 
     // 戻り値の中から一番顕著な感情を取得する。
     $max_point = max($emotions);
@@ -204,10 +204,22 @@ echo $emotions['anger'];
 <br>
 
 <?php
-echo "<a href=\"javascript:location.href='http://twitter.com/home?status='+encodeURI(document.title) + '"."(".$result['emotion'].") ".$requestPng2." (11月10日まで)+%2523白鷺祭  %2523計算知能工学研究室 %2523B4-E409 %2523大阪府立大学'\" class=\"flat_ss\">
+echo "<a href=\"javascript:location.href='http://twitter.com/home?status='+encodeURI(document.title) + '"."(".$result['emotion'].") ".$requestPng2." (11月10日まで)+%2523白鷺祭  %2523計算知能工学研究室 %2523B4_E409 %2523大阪府立大学'\" class=\"flat_ss\">
 <span class=\"iconback tw\"><i class=\"fa fa-twitter\"></i></span><span class=\"btnttl\">TWEET</span>
 </a>";
 echo "<img src=\"".$requestPng2."\" alt=\"recognitioinresult\" title=\"RecognitionResult\">";
 ?>
 <br>
 
+<?php
+try
+{
+    $response = $request->send();
+    echo $response->getBody();
+}
+catch (HttpException $ex)
+{
+    echo $ex;
+}
+
+?>
