@@ -3,16 +3,16 @@
 
 require_once 'HTTP/Request2.php';
 require('setting.php');
-function h($string) {
-    if (is_array($string)) {
-        return array_map("h", $string);
-    } else {
-        return htmlspecialchars($string, ENT_QUOTES,'UTF-8');
-    }
-}
-echo "<pre>$_POST------------------";
-print_r(h($_POST));
-echo "---------------</pre>";
+// function h($string) {
+//     if (is_array($string)) {
+//         return array_map("h", $string);
+//     } else {
+//         return htmlspecialchars($string, ENT_QUOTES,'UTF-8');
+//     }
+// }
+// echo "<pre>$_POST------------------";
+// print_r(h($_POST));
+// echo "---------------</pre>";
 
 
 //canvasデータがPOSTで送信されてきた場合
@@ -24,7 +24,7 @@ $saveData = './img/'.((string)$canvashash).'.png';
 $canvasData = preg_replace("/data:[^,]+,/i","",$canvasData);
 
 $canvasData = base64_decode($canvasData);
-echo $saveData;
+//echo $saveData;
 
 //here something is wrong
 $image = imagecreatefromstring($canvasData);
@@ -60,7 +60,8 @@ $url->setQueryVariables($parameters);
 
 $request->setMethod(HTTP_Request2::METHOD_POST);
 
-$requestPng = "http://www.doi-ken.com/public_html/faceapi/img/"."result".".png";
+//$requestPng = "http://www.doi-ken.com/public_html/faceapi/img/"."result".".png";
+$requestPng = "http://www.doi-ken.com/public_html/faceapi/img/".((string)$canvashash).".png";
 $requestBody = '{"url": "'.$requestPng.'"}';
 
 // Request body
@@ -70,11 +71,11 @@ $request->setBody($requestBody);
 try
 {
     $response = $request->send();
-    echo $response->getBody();
+    //echo $response->getBody();
 }
 catch (HttpException $ex)
 {
-    echo $ex;
+   // echo $ex;
 }
 
 $ret = json_decode($response->getBody());
@@ -108,6 +109,35 @@ echo $emotions['anger'];
 
     echo nl2br("\n");;
     echo $result['emotion'].": ".$result['point'];
+
+   
+    $png_alpha = './'.$result['emotion'].'.png';
+   
+    $image_back = imagecreatefrompng($saveData);
+    $image_alpha = imagecreatefrompng($png_alpha);
+    list($width, $height, $type, $attr) = getimagesize($saveData);
+
+    
+
+    $marge_right = 10;
+    $marge_bottom = 10;
+    $sx = imagesx($image_alpha);
+    $sy = imagesy($image_alpha);
+    
+    // スタンプを、50% の不透明度で写真に重ねます
+    imagecopymerge($image_back,  //コピー先の画像リンクリソース
+    $image_alpha, //コピー元の画像リンクリソース
+     imagesx($image_back) - $sx - $marge_right,
+     imagesy($image_back) - $sy - $marge_bottom, 
+     0, 0, imagesx($image_alpha), imagesy($image_alpha), 100);
+
+    $saveData2 = './img/'.((string)$canvashash).'_.png';
+    imagepng($image_back, $saveData2);
+    imagedestroy($image_back);
+    imagedestroy($image_alpha);
+    $requestPng2 = "http://www.doi-ken.com/public_html/faceapi/img/".((string)$canvashash)."_.png";
+    
+
 
 ?>
 
@@ -174,30 +204,10 @@ echo $emotions['anger'];
 <br>
 
 <?php
-echo "<a href=\"javascript:location.href='http://twitter.com/home?status='+encodeURI(document.title) + '".$requestPng." (11月10日まで)+%2523白鷺祭  %2523計算知能工学研究室 %2523B4-E409'\" class=\"flat_ss\">
+echo "<a href=\"javascript:location.href='http://twitter.com/home?status='+encodeURI(document.title) + '"."(".$result['emotion'].") ".$requestPng2." (11月10日まで)+%2523白鷺祭  %2523計算知能工学研究室 %2523B4-E409 %2523大阪府立大学'\" class=\"flat_ss\">
 <span class=\"iconback tw\"><i class=\"fa fa-twitter\"></i></span><span class=\"btnttl\">TWEET</span>
 </a>";
-echo "<img src=\"".$requestPng."\" alt=\"海の写真\" title=\"空と海\">";
+echo "<img src=\"".$requestPng2."\" alt=\"recognitioinresult\" title=\"RecognitionResult\">";
 ?>
 <br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
 
-<?php
-
-try
-{
-    $response = $request->send();
-    echo $response->getBody();
-}
-catch (HttpException $ex)
-{
-    echo $ex;
-}
-
-?>
