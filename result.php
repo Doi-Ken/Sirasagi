@@ -95,8 +95,8 @@ if(!$ret) {
   );
 
   
-echo nl2br("\n");;
-echo $saveData;
+//echo nl2br("\n");;
+//echo $saveData;
 
     // 戻り値の中から一番顕著な感情を取得する。
     $max_point = max($emotions);
